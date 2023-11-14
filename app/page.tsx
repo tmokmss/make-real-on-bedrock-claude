@@ -124,14 +124,17 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
   const editor = useEditor();
   const [loading, setLoading] = useState(false);
   const exportAs = useExportAs();
+  const [key, setKey] = useState("");
+
   // A tailwind styled button that is pinned to the bottom right of the screen
   return (
     <div className="fixed bottom-4 right-4" style={{ zIndex: 1000 }}>
       <input
         type="password"
         placeholder="GPT API Key"
-        // Should show asterisks instead of plaintext
         className="mr-2 bg-white border-2 border-gray-300 rounded-lg px-4 py-2 w-30"
+        value={key}
+        onChange={(e) => setKey(e.target.value)}
       />
       <button
         onClick={async (e) => {
@@ -186,6 +189,7 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
               body: JSON.stringify({
                 image: dataUrl,
                 html: previousHtml,
+                key,
               }),
             });
 

@@ -8,7 +8,7 @@ const systemPrompt = `You are an expert tailwind developer. A user will provide 
 if you need to insert an image, use a colored fill rectangle as a placeholder. Respond only with the html file.`;
 
 export async function POST(request: Request) {
-  const { image, html } = await request.json();
+  const { image, html, key } = await request.json();
   const body: GPT4VCompletionRequest = {
     model: "gpt-4-vision-preview",
     max_tokens: 4096,
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+        Authorization: `Bearer ${key}`,
       },
       body: JSON.stringify(body),
     });
