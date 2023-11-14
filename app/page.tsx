@@ -130,11 +130,14 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
 
   // A tailwind styled button that is pinned to the bottom right of the screen
   return (
-    <div className="fixed bottom-4 right-4" style={{ zIndex: 1000 }}>
+    <div
+      className="fixed bottom-4 right-4 flex items-center gap-2"
+      style={{ zIndex: 1000 }}
+    >
       <input
         type="password"
         placeholder="GPT API Key"
-        className="mr-2 bg-white border-2 border-gray-300 rounded-lg px-4 py-2 w-30"
+        className=" bg-white border-2 border-gray-300 rounded-lg px-4 py-2 w-30"
         value={key}
         onChange={(e) => setKey(e.target.value)}
       />
@@ -215,8 +218,6 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
               y: previewPosition.y,
               props: { html },
             });
-
-            // setHtml(html);
           } finally {
             setLoading(false);
           }
@@ -224,11 +225,11 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
         className=" bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
       >
         {loading ? (
-          <div className="flex justify-center items-center ">
+          <div className="flex justify-center items-center relative h-4 w-4">
             <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
           </div>
         ) : (
-          "Make Real"
+          "Make real"
         )}
       </button>
     </div>
