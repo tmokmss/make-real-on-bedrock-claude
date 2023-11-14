@@ -147,6 +147,13 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
           try {
             e.preventDefault();
 
+            if (editor.selectedShapes.length === 0) {
+              alert(
+                "No shapes selected. Select some shapes to 'make real' first :)"
+              );
+              return;
+            }
+
             const previewPosition = editor.selectedShapes.reduce(
               (acc, shape) => {
                 const bounds = editor.getShapePageBounds(shape);
@@ -165,8 +172,11 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
             }) as PreviewShapeType[];
 
             if (previousPreviews.length > 1) {
+              alert(
+                "Currently, you can only give GPT one previous design to work with.\nWant to make this a feature? Open a PR on our fork!\ngithub.com/tldraw/draw-a-ui"
+              );
               throw new Error(
-                "You can only give the developer one previous design to work with."
+                "Currently, you can only give GPT one previous design to work with.\nWant to make this a feature? Open a PR on our fork!\ngithub.com/tldraw/draw-a-ui"
               );
             }
 
