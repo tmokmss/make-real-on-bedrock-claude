@@ -134,13 +134,38 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
       className="fixed bottom-4 right-4 flex items-center gap-2"
       style={{ zIndex: 1000 }}
     >
+      <div className="relative">
+        <div className="relative bg-white rounded-full w-6 h-6 flex justify-center items-center border hover:bg-gray-100 group">
+          <svg
+            className="w-4 h-4 text-gray-400"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <div className="absolute bg-white rounded-lg p-4 shadow-lg hidden group-hover:flex w-fit bottom-7">
+            <p className="text-sm text-gray-700 w-full whitespace-nowrap">
+              {"We don't see or save this."}
+            </p>
+          </div>
+        </div>
+      </div>
       <input
         type="password"
         placeholder="GPT API Key"
-        className=" bg-white border-2 border-gray-300 rounded-lg px-4 py-2 w-30"
+        className={`bg-white border-2 rounded-lg px-4 py-2 w-30 ${
+          key === "" ? "border-blue-500" : "border-gray-300"
+        }`}
         value={key}
         onChange={(e) => setKey(e.target.value)}
       />
+
       <button
         onClick={async (e) => {
           setLoading(true);
