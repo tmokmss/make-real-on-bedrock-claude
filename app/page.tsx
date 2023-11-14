@@ -26,6 +26,8 @@ import ReactDOM from "react-dom";
 import { PreviewModal } from "@/components/PreviewModal";
 import { format } from "path";
 import { type } from "os";
+import { start } from "repl";
+import { json } from "stream/consumers";
 
 type PreviewShapeType = TLBaseShape<
   "preview",
@@ -181,6 +183,8 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
               scale: 1,
             });
             const dataUrl = await blobToBase64(png!);
+
+            const keyBody = key !== "" ? { key } : {};
             const resp = await fetch("/api/toHtml", {
               method: "POST",
               headers: {
@@ -189,7 +193,7 @@ function ExportButton(/*{ setHtml }: { setHtml: (html: string) => void }*/) {
               body: JSON.stringify({
                 image: dataUrl,
                 html: previousHtml,
-                key,
+                ...keyBody,
               }),
             });
 

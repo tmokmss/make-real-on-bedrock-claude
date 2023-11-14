@@ -47,7 +47,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${key}`,
+        Authorization: `Bearer ${key ?? process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify(body),
     });
