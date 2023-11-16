@@ -16,6 +16,15 @@ export function ExportButton() {
 					e.preventDefault()
 
 					const selectedShapes = editor.getSelectedShapes()
+
+					if (selectedShapes.length === 0) {
+						toast.addToast({
+							title: 'Nothing selected',
+							description: 'First select something to make real.',
+							id: 'nothing_selected',
+						})
+					}
+
 					const previewPosition = selectedShapes.reduce(
 						(acc, shape) => {
 							const bounds = editor.getShapePageBounds(shape)
