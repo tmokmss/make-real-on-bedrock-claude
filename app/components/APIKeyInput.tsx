@@ -7,7 +7,7 @@ export function APIKeyInput() {
 			<div className="your-own-api-key__inner">
 				<div>Have your own OpenAI API key?</div>
 				<div className="input__wrapper">
-					<input type="password" id="openai_key_risky_but_cool" />
+					<input id="openai_key_risky_but_cool" />
 				</div>
 			</div>
 		</div>
