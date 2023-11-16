@@ -1,9 +1,4 @@
-import {
-	useEditor,
-	getSvgAsImage,
-	useToasts,
-	createShapeId,
-} from '@tldraw/tldraw'
+import { useEditor, getSvgAsImage, useToasts, createShapeId } from '@tldraw/tldraw'
 import { useState } from 'react'
 import { PreviewShape } from '../PreviewShape/PreviewShape'
 
@@ -39,9 +34,7 @@ export function ExportButton() {
 					}) as PreviewShape[]
 
 					if (previousPreviews.length > 1) {
-						throw new Error(
-							'You can only give the developer one previous design to work with.'
-						)
+						throw new Error('You can only give the developer one previous design to work with.')
 					}
 
 					const previousHtml =
@@ -54,9 +47,7 @@ export function ExportButton() {
 						return
 					}
 
-					const IS_SAFARI = /^((?!chrome|android).)*safari/i.test(
-						navigator.userAgent
-					)
+					const IS_SAFARI = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 
 					const blob = await getSvgAsImage(svg, IS_SAFARI, {
 						type: 'png',
@@ -84,11 +75,8 @@ export function ExportButton() {
 							image: dataUrl,
 							html: previousHtml,
 							apiKey:
-								(
-									document.getElementById(
-										'openai_key_risky_but_cool'
-									) as HTMLInputElement
-								)?.value ?? null,
+								(document.getElementById('openai_key_risky_but_cool') as HTMLInputElement)?.value ??
+								null,
 						}),
 					})
 
