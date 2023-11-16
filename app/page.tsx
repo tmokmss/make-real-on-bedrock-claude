@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/rules-of-hooks */
 'use client'
 
@@ -8,7 +9,6 @@ import { PreviewShapeUtil } from './PreviewShape/PreviewShape'
 import { ExportButton } from './components/ExportButton'
 import { useBreakpoint } from '@tldraw/tldraw'
 import { APIKeyInput } from './components/APIKeyInput'
-import Image from 'next/image'
 
 const Tldraw = dynamic(async () => (await import('@tldraw/tldraw')).Tldraw, {
 	ssr: false,
@@ -36,7 +36,7 @@ function LockupLink() {
 			className={`lockup__link ${breakpoint < 5 ? 'lockup__link__mobile' : ''}`}
 			href="https://www.tldraw.dev"
 		>
-			<Image
+			<img
 				alt="tldraw logo"
 				className="lockup"
 				src="/lockup.svg"
