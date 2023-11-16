@@ -21,8 +21,9 @@ export function ExportButton() {
 						toast.addToast({
 							title: 'Nothing selected',
 							description: 'First select something to make real.',
-							id: 'nothing_selected',
+							id: 'nothing_selected: First select something to make real.',
 						})
+						return
 					}
 
 					const previewPosition = selectedShapes.reduce(
@@ -43,7 +44,13 @@ export function ExportButton() {
 					}) as PreviewShape[]
 
 					if (previousPreviews.length > 1) {
-						throw new Error('You can only give the developer one previous design to work with.')
+						toast.addToast({
+							title: 'Too many previous designs',
+							description:
+								'Currently, you can only give the developer one previous design to work with.',
+							id: 'too_many_previous_designs',
+						})
+						return
 					}
 
 					const previousHtml =
