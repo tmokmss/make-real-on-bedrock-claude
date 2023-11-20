@@ -1,16 +1,20 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { Editor as MonacoEditor, OnChange } from '@monaco-editor/react'
 import {
-	TLBaseShape,
 	BaseBoxShapeUtil,
-	useIsEditing,
-	HTMLContainer,
-	toDomPrecision,
-	Icon,
-	useToasts,
 	DefaultSpinner,
-	stopEventPropagation,
+	Editor,
+	HTMLContainer,
+	Icon,
+	TLBaseShape,
 	Vec2d,
+	stopEventPropagation,
+	toDomPrecision,
+	useIsDarkMode,
+	useIsEditing,
+	useToasts,
 } from '@tldraw/tldraw'
+import { useCallback, useState } from 'react'
 
 export type PreviewShape = TLBaseShape<
 	'preview',
@@ -21,6 +25,74 @@ export type PreviewShape = TLBaseShape<
 		h: number
 	}
 >
+
+export function ShowResult({
+	boxShadow,
+	editor,
+	html,
+	isEditing,
+	isShowingEditor,
+	shape,
+}: {
+	boxShadow: string
+	editor: Editor
+	html: string
+	isEditing: boolean
+	isShowingEditor: boolean
+	shape: PreviewShape
+}) {
+	const dark = useIsDarkMode()
+
+	const handleOnChange: OnChange = useCallback(
+		(value, _event) => {
+			editor.updateShape({
+				id: shape.id,
+				type: shape.type,
+				props: {
+					html: value,
+				},
+			})
+		},
+		[editor, shape.id, shape.type]
+	)
+
+	return (
+		<>
+			{isShowingEditor && (
+				<div style={{ width: '2000px', height: '100%' }}>
+					<MonacoEditor
+						defaultLanguage="html"
+						defaultValue={html}
+						onChange={handleOnChange}
+						theme={dark ? 'vs-dark' : 'vs-light'}
+						options={{
+							minimap: {
+								enabled: false,
+							},
+							lineNumbers: 'off',
+							wordWrap: 'wordWrapColumn',
+							wordWrapColumn: 80,
+							fontSize: 13,
+						}}
+					/>
+				</div>
+			)}
+			<iframe
+				srcDoc={html}
+				width={toDomPrecision(shape.props.w)}
+				height={toDomPrecision(shape.props.h)}
+				draggable={false}
+				style={{
+					pointerEvents: isEditing ? 'auto' : 'none',
+					boxShadow,
+					border: '1px solid var(--color-panel-contrast)',
+					borderRadius: 'var(--radius-2)',
+				}}
+			/>
+			)
+		</>
+	)
+}
 
 export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 	static override type = 'preview' as const
@@ -42,6 +114,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 
 	override component(shape: PreviewShape) {
 		const isEditing = useIsEditing(shape.id)
+		const [isShowingEditor, setIsShowingEditor] = useState(false)
 		const toast = useToasts()
 
 		const pageRotation = this.editor.getShapePageTransform(shape)!.rotation()
@@ -59,17 +132,13 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 		return (
 			<HTMLContainer className="tl-embed-container" id={shape.id}>
 				{htmlToUse ? (
-					<iframe
-						srcDoc={htmlToUse}
-						width={toDomPrecision(shape.props.w)}
-						height={toDomPrecision(shape.props.h)}
-						draggable={false}
-						style={{
-							pointerEvents: isEditing ? 'auto' : 'none',
-							boxShadow,
-							border: '1px solid var(--color-panel-contrast)',
-							borderRadius: 'var(--radius-2)',
-						}}
+					<ShowResult
+						boxShadow={boxShadow}
+						editor={this.editor}
+						html={htmlToUse}
+						isEditing={isEditing}
+						isShowingEditor={isShowingEditor}
+						shape={shape}
 					/>
 				) : (
 					<div
@@ -89,34 +158,58 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 					</div>
 				)}
 				{htmlToUse && (
-					<button
-						style={{
-							all: 'unset',
-							position: 'absolute',
-							top: 0,
-							right: -40,
-							height: 40,
-							width: 40,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							cursor: 'pointer',
-							pointerEvents: 'all',
-						}}
-						onClick={() => {
-							if (navigator && navigator.clipboard) {
-								navigator.clipboard.writeText(shape.props.html)
-								toast.addToast({
-									icon: 'code',
-									title: 'Copied to clipboard',
-								})
-							}
-						}}
-						onPointerDown={stopEventPropagation}
-						title="Copy code to clipboard"
-					>
-						<Icon icon="code" />
-					</button>
+					<>
+						<button
+							style={{
+								all: 'unset',
+								position: 'absolute',
+								top: 0,
+								right: -40,
+								height: 40,
+								width: 40,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								cursor: 'pointer',
+								pointerEvents: 'all',
+							}}
+							onClick={() => {
+								if (navigator && navigator.clipboard) {
+									navigator.clipboard.writeText(shape.props.html)
+									toast.addToast({
+										icon: 'code',
+										title: 'Copied to clipboard',
+									})
+								}
+							}}
+							onPointerDown={stopEventPropagation}
+							title="Copy code to clipboard"
+						>
+							<Icon icon="code" />
+						</button>
+						<button
+							style={{
+								all: 'unset',
+								position: 'absolute',
+								top: 30,
+								right: -40,
+								height: 40,
+								width: 40,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								cursor: 'pointer',
+								pointerEvents: 'all',
+							}}
+							onClick={() => {
+								setIsShowingEditor(!isShowingEditor)
+							}}
+							onPointerDown={stopEventPropagation}
+							title="Show code"
+						>
+							<Icon icon="follow" />
+						</button>
+					</>
 				)}
 				{htmlToUse && (
 					<div
