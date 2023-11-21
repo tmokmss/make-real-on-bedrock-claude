@@ -34,9 +34,27 @@ export function ShowResult({
 	)
 
 	return (
-		<>
+		<div
+			style={{
+				display: 'flex',
+				flexDirection: 'column',
+			}}
+		>
+			<iframe
+				srcDoc={html}
+				width={toDomPrecision(shape.props.w)}
+				height={isShowingEditor ? toDomPrecision(shape.props.h / 2) : toDomPrecision(shape.props.h)}
+				draggable={false}
+				style={{
+					flexShrink: 1,
+					pointerEvents: isEditing ? 'auto' : 'none',
+					boxShadow,
+					border: '1px solid var(--color-panel-contrast)',
+					borderRadius: 'var(--radius-2)',
+				}}
+			/>
 			{isShowingEditor && (
-				<div style={{ width: '2000px', height: '100%' }}>
+				<div style={{ width: '100%', height: toDomPrecision(shape.props.h / 2) }}>
 					<MonacoEditor
 						defaultLanguage="html"
 						defaultValue={html}
@@ -54,18 +72,6 @@ export function ShowResult({
 					/>
 				</div>
 			)}
-			<iframe
-				srcDoc={html}
-				width={toDomPrecision(shape.props.w)}
-				height={toDomPrecision(shape.props.h)}
-				draggable={false}
-				style={{
-					pointerEvents: isEditing ? 'auto' : 'none',
-					boxShadow,
-					border: '1px solid var(--color-panel-contrast)',
-					borderRadius: 'var(--radius-2)',
-				}}
-			/>
-		</>
+		</div>
 	)
 }
