@@ -1,11 +1,8 @@
-'use client'
-
 import { Icon, stopEventPropagation, useToasts } from '@tldraw/tldraw'
 import { PreviewShape } from '../PreviewShape/PreviewShape'
 
-export function UrlLinkButton({ shape }: { shape: PreviewShape }) {
+export function CopyToClipboardButton({ shape }: { shape: PreviewShape }) {
 	const toast = useToasts()
-
 	return (
 		<button
 			style={{
@@ -20,17 +17,17 @@ export function UrlLinkButton({ shape }: { shape: PreviewShape }) {
 			}}
 			onClick={() => {
 				if (navigator && navigator.clipboard) {
-					navigator.clipboard.writeText(`${window.location.origin}/link/${shape.id.split(':')[1]}`)
+					navigator.clipboard.writeText(shape.props.html)
 					toast.addToast({
 						icon: 'code',
-						title: 'Copied url to clipboard',
+						title: 'Copied html to clipboard',
 					})
 				}
 			}}
 			onPointerDown={stopEventPropagation}
-			title="Copy url to clipboard"
+			title="Copy code to clipboard"
 		>
-			<Icon icon="link" />
+			<Icon icon="code" />
 		</button>
 	)
 }

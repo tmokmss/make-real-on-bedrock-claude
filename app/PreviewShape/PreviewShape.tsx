@@ -3,15 +3,14 @@ import {
 	BaseBoxShapeUtil,
 	DefaultSpinner,
 	HTMLContainer,
-	Icon,
 	TLBaseShape,
 	Vec2d,
-	stopEventPropagation,
 	useIsEditing,
-	useToasts,
 	useValue,
 } from '@tldraw/tldraw'
 import { useState } from 'react'
+import { CopyToClipboardButton } from '../components/CopyToClipboardButton'
+import { Hint } from '../components/Hint'
 import { ShowEditorButton } from '../components/ShowEditorButton'
 import { ShowResult } from '../components/ShowResult'
 import { UrlLinkButton } from '../components/UrlLinkButton'
@@ -47,7 +46,6 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 	override component(shape: PreviewShape) {
 		const isEditing = useIsEditing(shape.id)
 		const [isShowingEditor, setIsShowingEditor] = useState(false)
-		const toast = useToasts()
 
 		const boxShadow = useValue(
 			'box shadow',
@@ -98,70 +96,25 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 					</div>
 				)}
 				{htmlToUse && (
-					<button
-						style={{
-							all: 'unset',
-							position: 'absolute',
-							top: 0,
-							right: -40,
-							height: 40,
-							width: 40,
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							cursor: 'pointer',
-							pointerEvents: 'all',
-						}}
-						onClick={() => {
-							if (navigator && navigator.clipboard) {
-								navigator.clipboard.writeText(shape.props.html)
-								toast.addToast({
-									icon: 'code',
-									title: 'Copied html to clipboard',
-								})
-							}
-						}}
-						onPointerDown={stopEventPropagation}
-						title="Copy code to clipboard"
-					>
-						<Icon icon="code" />
-					</button>
-				)}
-				{htmlToUse && <UrlLinkButton shape={shape} />}
-				{htmlToUse && (
-					<ShowEditorButton
-						isShowingEditor={isShowingEditor}
-						setIsShowingEditor={setIsShowingEditor}
-					/>
-				)}
-				{htmlToUse && (
-					<div
-						style={{
-							textAlign: 'center',
-							position: 'absolute',
-							bottom: isEditing ? -40 : 0,
-							padding: 4,
-							fontFamily: 'inherit',
-							fontSize: 12,
-							left: 0,
-							width: '100%',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'center',
-							pointerEvents: 'none',
-						}}
-					>
-						<span
+					<>
+						<div
 							style={{
-								background: 'var(--color-panel)',
-								padding: '4px 12px',
-								borderRadius: 99,
-								border: '1px solid var(--color-muted-1)',
+								position: 'absolute',
+								top: 0,
+								right: -40,
+								display: 'flex',
+								flexDirection: 'column',
 							}}
 						>
-							{isEditing ? 'Click the canvas to exit' : 'Double click to interact'}
-						</span>
-					</div>
+							<CopyToClipboardButton shape={shape} />
+							<UrlLinkButton shape={shape} />
+							<ShowEditorButton
+								isShowingEditor={isShowingEditor}
+								setIsShowingEditor={setIsShowingEditor}
+							/>
+						</div>
+						<Hint isEditing={isEditing} />
+					</>
 				)}
 			</HTMLContainer>
 		)
