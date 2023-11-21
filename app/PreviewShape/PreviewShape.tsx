@@ -25,6 +25,24 @@ export type PreviewShape = TLBaseShape<
 	}
 >
 
+function getHtmlToUse(html: string) {
+	if (!html) return null
+
+	if (
+		html.includes(
+			"<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>"
+		)
+	) {
+		return html
+	}
+
+	return html.replace(
+		`</body>`,
+		`<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+</body>`
+	)
+}
+
 export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 	static override type = 'preview' as const
 
@@ -59,13 +77,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 		const { html } = shape.props
 
 		// Kind of a hack—we're preventing user's from pinching-zooming into the iframe
-		const htmlToUse = html
-			? html.replace(
-					`</body>`,
-					`<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
-</body>`
-			  )
-			: null
+		const htmlToUse = getHtmlToUse(html)
 
 		return (
 			<HTMLContainer className="tl-embed-container" id={shape.id}>
