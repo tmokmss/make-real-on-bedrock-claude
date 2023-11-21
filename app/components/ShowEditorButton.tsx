@@ -1,12 +1,8 @@
-import { Icon, stopEventPropagation } from '@tldraw/tldraw'
+import { Editor, Icon, stopEventPropagation } from '@tldraw/tldraw'
 
-export function ShowEditorButton({
-	isShowingEditor,
-	setIsShowingEditor,
-}: {
-	isShowingEditor: boolean
-	setIsShowingEditor: (isShowingEditor: boolean) => void
-}) {
+export const EDITOR_WIDTH = 1000
+
+export function ShowEditorButton({ shape, editor }: { shape: PreviewShape; editor: Editor }) {
 	return (
 		<button
 			style={{
@@ -20,7 +16,25 @@ export function ShowEditorButton({
 				pointerEvents: 'all',
 			}}
 			onClick={() => {
-				setIsShowingEditor(!isShowingEditor)
+				if (shape.props.isShowingEditor) {
+					editor.updateShape({
+						id: shape.id,
+						type: shape.type,
+						props: {
+							isShowingEditor: false,
+							w: shape.props.w - EDITOR_WIDTH,
+						},
+					})
+				} else {
+					editor.updateShape({
+						id: shape.id,
+						type: shape.type,
+						props: {
+							isShowingEditor: true,
+							w: shape.props.w + EDITOR_WIDTH,
+						},
+					})
+				}
 			}}
 			onPointerDown={stopEventPropagation}
 			title="Show code"

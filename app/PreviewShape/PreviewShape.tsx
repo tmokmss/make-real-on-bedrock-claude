@@ -22,6 +22,7 @@ export type PreviewShape = TLBaseShape<
 		source: string
 		w: number
 		h: number
+		isShowingEditor: boolean
 	}
 >
 
@@ -52,6 +53,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 			source: '',
 			w: (960 * 2) / 3,
 			h: (540 * 2) / 3,
+			isShowingEditor: false,
 		}
 	}
 
@@ -87,7 +89,6 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 						editor={this.editor}
 						html={htmlToUse}
 						isEditing={isEditing}
-						isShowingEditor={isShowingEditor}
 						shape={shape}
 					/>
 				) : (
@@ -120,10 +121,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 						>
 							<CopyToClipboardButton shape={shape} />
 							<UrlLinkButton shape={shape} />
-							<ShowEditorButton
-								isShowingEditor={isShowingEditor}
-								setIsShowingEditor={setIsShowingEditor}
-							/>
+							<ShowEditorButton shape={shape} editor={this.editor} />
 						</div>
 						<Hint isEditing={isEditing} />
 					</>

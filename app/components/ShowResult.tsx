@@ -2,23 +2,23 @@ import { Editor as MonacoEditor, OnChange } from '@monaco-editor/react'
 import { Editor, toDomPrecision, useIsDarkMode } from '@tldraw/tldraw'
 import { useCallback } from 'react'
 import { PreviewShape } from '../PreviewShape/PreviewShape'
+import { EDITOR_WIDTH } from './ShowEditorButton'
 
 export function ShowResult({
 	boxShadow,
 	editor,
 	html,
 	isEditing,
-	isShowingEditor,
 	shape,
 }: {
 	boxShadow: string
 	editor: Editor
 	html: string
 	isEditing: boolean
-	isShowingEditor: boolean
 	shape: PreviewShape
 }) {
 	const dark = useIsDarkMode()
+	const { isShowingEditor } = shape.props
 
 	const handleOnChange: OnChange = useCallback(
 		(value, _event) => {
@@ -34,16 +34,11 @@ export function ShowResult({
 	)
 
 	return (
-		<div
-			style={{
-				display: 'flex',
-				flexDirection: 'column',
-			}}
-		>
+		<>
 			<iframe
 				srcDoc={html}
-				width={toDomPrecision(shape.props.w)}
-				height={isShowingEditor ? toDomPrecision(shape.props.h / 2) : toDomPrecision(shape.props.h)}
+				width={toDomPrecision(shape.props.w - (shape.props.isShowingEditor ? EDITOR_WIDTH : 0))}
+				height={toDomPrecision(shape.props.h)}
 				draggable={false}
 				style={{
 					flexShrink: 1,
@@ -54,7 +49,7 @@ export function ShowResult({
 				}}
 			/>
 			{isShowingEditor && (
-				<div style={{ width: '100%', height: toDomPrecision(shape.props.h / 2) }}>
+				<div style={{ width: EDITOR_WIDTH, height: '100%' }}>
 					<MonacoEditor
 						defaultLanguage="html"
 						defaultValue={html}
@@ -72,6 +67,6 @@ export function ShowResult({
 					/>
 				</div>
 			)}
-		</div>
+		</>
 	)
 }
