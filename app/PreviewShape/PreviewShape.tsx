@@ -3,20 +3,20 @@ import {
 	BaseBoxShapeUtil,
 	DefaultSpinner,
 	HTMLContainer,
+	Icon,
 	TLBaseShape,
 	Vec2d,
+	stopEventPropagation,
+	toDomPrecision,
 	useIsEditing,
+	useToasts,
 	useValue,
 } from '@tldraw/tldraw'
-import { useState } from 'react'
-import { CopyToClipboardButton } from '../components/CopyToClipboardButton'
-import { Hint } from '../components/Hint'
-import { ShowResult } from '../components/ShowResult'
+import { useEffect } from 'react'
 import { UrlLinkButton } from '../components/UrlLinkButton'
 import { LINK_HOST, PROTOCOL } from '../lib/hosts'
-import { useEffect } from 'react'
 import { uploadLink } from '../lib/uploadLink'
-import style from 'styled-jsx/style'
+import { Hint } from '../components/Hint'
 
 export type PreviewShape = TLBaseShape<
 	'preview',
@@ -30,24 +30,6 @@ export type PreviewShape = TLBaseShape<
 	}
 >
 
-function getHtmlToUse(html: string) {
-	if (!html) return null
-
-	if (
-		html.includes(
-			"<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>"
-		)
-	) {
-		return html
-	}
-
-	return html.replace(
-		`</body>`,
-		`<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
-</body>`
-	)
-}
-
 export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 	static override type = 'preview' as const
 
@@ -57,7 +39,6 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 			source: '',
 			w: (960 * 2) / 3,
 			h: (540 * 2) / 3,
-			isShowingEditor: false,
 		}
 	}
 
@@ -69,7 +50,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 
 	override component(shape: PreviewShape) {
 		const isEditing = useIsEditing(shape.id)
-		const [isShowingEditor, setIsShowingEditor] = useState(false)
+		const toast = useToasts()
 
 		const boxShadow = useValue(
 			'box shadow',
@@ -171,33 +152,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 							<Icon icon="code" />
 						</button>
 						<UrlLinkButton uploadUrl={uploadUrl} />
-						<div
-							style={{
-								textAlign: 'center',
-								position: 'absolute',
-								bottom: isEditing ? -40 : 0,
-								padding: 4,
-								fontFamily: 'inherit',
-								fontSize: 12,
-								left: 0,
-								width: '100%',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								pointerEvents: 'none',
-							}}
-						>
-							<span
-								style={{
-									background: 'var(--color-panel)',
-									padding: '4px 12px',
-									borderRadius: 99,
-									border: '1px solid var(--color-muted-1)',
-								}}
-							>
-								{isEditing ? 'Click the canvas to exit' : 'Double click to interact'}
-							</span>
-						</div>
+						<Hint isEditing={isEditing} />
 					</>
 				)}
 			</HTMLContainer>
