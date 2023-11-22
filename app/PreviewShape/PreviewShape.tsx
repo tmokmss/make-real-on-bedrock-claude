@@ -17,6 +17,7 @@ import { UrlLinkButton } from '../components/UrlLinkButton'
 import { LINK_HOST, PROTOCOL } from '../lib/hosts'
 import { uploadLink } from '../lib/uploadLink'
 import { Hint } from '../components/Hint'
+import { CopyToClipboardButton } from '../components/CopyToClipboardButton'
 
 export type PreviewShape = TLBaseShape<
 	'preview',
@@ -123,35 +124,43 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 								borderRadius: 'var(--radius-2)',
 							}}
 						/>
-						<button
+						<div
 							style={{
-								all: 'unset',
 								position: 'absolute',
-								top: 0,
 								right: -40,
-								height: 40,
-								width: 40,
+								top: 0,
+							}}
+						>
+							<CopyToClipboardButton shape={shape} />
+							<UrlLinkButton uploadUrl={uploadUrl} />
+						</div>
+						<div
+							style={{
+								textAlign: 'center',
+								position: 'absolute',
+								bottom: isEditing ? -40 : 0,
+								padding: 4,
+								fontFamily: 'inherit',
+								fontSize: 12,
+								left: 0,
+								width: '100%',
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: 'center',
-								cursor: 'pointer',
-								pointerEvents: 'all',
+								pointerEvents: 'none',
 							}}
-							onClick={() => {
-								if (navigator && navigator.clipboard) {
-									navigator.clipboard.writeText(shape.props.html)
-									toast.addToast({
-										icon: 'code',
-										title: 'Copied html to clipboard',
-									})
-								}
-							}}
-							onPointerDown={stopEventPropagation}
-							title="Copy code to clipboard"
 						>
-							<Icon icon="code" />
-						</button>
-						<UrlLinkButton uploadUrl={uploadUrl} />
+							<span
+								style={{
+									background: 'var(--color-panel)',
+									padding: '4px 12px',
+									borderRadius: 99,
+									border: '1px solid var(--color-muted-1)',
+								}}
+							>
+								{isEditing ? 'Click the canvas to exit' : 'Double click to interact'}
+							</span>
+						</div>
 						<Hint isEditing={isEditing} />
 					</>
 				)}
