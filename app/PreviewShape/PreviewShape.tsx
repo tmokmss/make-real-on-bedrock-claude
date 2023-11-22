@@ -13,6 +13,10 @@ import { CopyToClipboardButton } from '../components/CopyToClipboardButton'
 import { Hint } from '../components/Hint'
 import { ShowResult } from '../components/ShowResult'
 import { UrlLinkButton } from '../components/UrlLinkButton'
+import { LINK_HOST, PROTOCOL } from '../lib/hosts'
+import { useEffect } from 'react'
+import { uploadLink } from '../lib/uploadLink'
+import style from 'styled-jsx/style'
 
 export type PreviewShape = TLBaseShape<
 	'preview',
@@ -21,7 +25,8 @@ export type PreviewShape = TLBaseShape<
 		source: string
 		w: number
 		h: number
-		isShowingEditor: boolean
+		linkUploadVersion?: number
+		uploadedShapeId?: string
 	}
 >
 
@@ -75,16 +80,39 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 			[this.editor]
 		)
 
-		const { html } = shape.props
+		const { html, linkUploadVersion, uploadedShapeId } = shape.props
 
-		// Kind of a hack—we're preventing user's from pinching-zooming into the iframe
-		const htmlToUse = getHtmlToUse(html)
+		// upload the html if we haven't already:
+		useEffect(() => {
+			let isCancelled = false
+			if (html && (linkUploadVersion === undefined || uploadedShapeId !== shape.id)) {
+				;(async () => {
+					await uploadLink(shape.id, html)
+					if (isCancelled) return
+
+					this.editor.updateShape<PreviewShape>({
+						id: shape.id,
+						type: 'preview',
+						props: {
+							linkUploadVersion: 1,
+							uploadedShapeId: shape.id,
+						},
+					})
+				})()
+			}
+			return () => {
+				isCancelled = true
+			}
+		}, [shape.id, html, linkUploadVersion, uploadedShapeId])
+
+		console.log(shape, uploadedShapeId)
+		const isLoading = linkUploadVersion === undefined || uploadedShapeId !== shape.id
+
+		const uploadUrl = [PROTOCOL, LINK_HOST, '/', shape.id.replace(/^shape:/, '')].join('')
 
 		return (
 			<HTMLContainer className="tl-embed-container" id={shape.id}>
-				{htmlToUse ? (
-					<ShowResult boxShadow={boxShadow} html={htmlToUse} isEditing={isEditing} shape={shape} />
-				) : (
+				{isLoading ? (
 					<div
 						style={{
 							width: '100%',
@@ -100,22 +128,76 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 					>
 						<DefaultSpinner />
 					</div>
-				)}
-				{htmlToUse && (
+				) : (
 					<>
-						<div
+						<iframe
+							src={`${uploadUrl}?preview=1&v=${linkUploadVersion}`}
+							width={toDomPrecision(shape.props.w)}
+							height={toDomPrecision(shape.props.h)}
+							draggable={false}
 							style={{
+								pointerEvents: isEditing ? 'auto' : 'none',
+								boxShadow,
+								border: '1px solid var(--color-panel-contrast)',
+								borderRadius: 'var(--radius-2)',
+							}}
+						/>
+						<button
+							style={{
+								all: 'unset',
 								position: 'absolute',
 								top: 0,
 								right: -40,
+								height: 40,
+								width: 40,
 								display: 'flex',
-								flexDirection: 'column',
+								alignItems: 'center',
+								justifyContent: 'center',
+								cursor: 'pointer',
+								pointerEvents: 'all',
+							}}
+							onClick={() => {
+								if (navigator && navigator.clipboard) {
+									navigator.clipboard.writeText(shape.props.html)
+									toast.addToast({
+										icon: 'code',
+										title: 'Copied html to clipboard',
+									})
+								}
+							}}
+							onPointerDown={stopEventPropagation}
+							title="Copy code to clipboard"
+						>
+							<Icon icon="code" />
+						</button>
+						<UrlLinkButton uploadUrl={uploadUrl} />
+						<div
+							style={{
+								textAlign: 'center',
+								position: 'absolute',
+								bottom: isEditing ? -40 : 0,
+								padding: 4,
+								fontFamily: 'inherit',
+								fontSize: 12,
+								left: 0,
+								width: '100%',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								pointerEvents: 'none',
 							}}
 						>
-							<CopyToClipboardButton shape={shape} />
-							<UrlLinkButton shape={shape} />
+							<span
+								style={{
+									background: 'var(--color-panel)',
+									padding: '4px 12px',
+									borderRadius: 99,
+									border: '1px solid var(--color-muted-1)',
+								}}
+							>
+								{isEditing ? 'Click the canvas to exit' : 'Double click to interact'}
+							</span>
 						</div>
-						<Hint isEditing={isEditing} />
 					</>
 				)}
 			</HTMLContainer>
