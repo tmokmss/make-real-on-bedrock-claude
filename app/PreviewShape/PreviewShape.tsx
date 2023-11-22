@@ -11,7 +11,6 @@ import {
 import { useState } from 'react'
 import { CopyToClipboardButton } from '../components/CopyToClipboardButton'
 import { Hint } from '../components/Hint'
-import { ShowEditorButton } from '../components/ShowEditorButton'
 import { ShowResult } from '../components/ShowResult'
 import { UrlLinkButton } from '../components/UrlLinkButton'
 
@@ -84,13 +83,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 		return (
 			<HTMLContainer className="tl-embed-container" id={shape.id}>
 				{htmlToUse ? (
-					<ShowResult
-						boxShadow={boxShadow}
-						editor={this.editor}
-						html={htmlToUse}
-						isEditing={isEditing}
-						shape={shape}
-					/>
+					<ShowResult boxShadow={boxShadow} html={htmlToUse} isEditing={isEditing} shape={shape} />
 				) : (
 					<div
 						style={{
@@ -121,7 +114,6 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 						>
 							<CopyToClipboardButton shape={shape} />
 							<UrlLinkButton shape={shape} />
-							<ShowEditorButton shape={shape} editor={this.editor} />
 						</div>
 						<Hint isEditing={isEditing} />
 					</>
