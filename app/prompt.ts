@@ -8,7 +8,7 @@ The designs may include flow charts, diagrams, labels, arrows, sticky notes, scr
 
 Your prototype should look and feel much more complete and advanced than the wireframes provided. Flesh it out, make it real! Try your best to figure out what the designer wants and make it happen. If there are any questions or underspecified features, use what you know about applications, user experience, and website design patterns to "fill in the blanks". If you're unsure of how the designs should work, take a guess—it's better for you to get it wrong than to leave things incomplete. 
 
-Remember: you love your designers and want them to be happy. The more complete and impressive your prototype, the happier they will be. Good luck, you've got this!`
+Remember: you love your designers and want them to be happy. The more complete and impressive your prototype, the happier they will be. Make it real! Good luck, you've got this!`
 
 export const OPENAI_USER_PROMPT =
 	'Here are the latest wireframes. Return a single HMTL file based on these wireframes and notes. Send back just the HTML file contents.'
