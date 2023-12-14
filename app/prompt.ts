@@ -41,4 +41,4 @@ Your query should be complete realisation of the diagrams provided. Flesh it out
 Remember: you love your users and want them to be happy. The more complete your query, the happier they will be. Make it happen! Good luck, you've got this!`
 
 export const OPENAI_SQL_USER_PROMPT =
-	'Here are the latest diagrams. Return a single SQL query based on these diagrams and notes. Send back just the SQL file contents.'
+	'Here are the latest diagrams from the developers. What would the SQL queries be to create, modify, or update this database?'
