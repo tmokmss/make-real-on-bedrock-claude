@@ -42,7 +42,7 @@ export async function makeHappen(editor: Editor, apiKey: string) {
 		type: 'text',
 		x: maxX + 60, // to the right of the selection
 		y: midY - (540 * 2) / 3 / 2, // half the height of the preview's initial shape
-		props: { text: 'Thinking...', font: 'mono', align: 'start', color: 'black' },
+		props: { text: 'Thinking...', font: 'mono', align: 'start', color: 'black', size: 'l' },
 	})
 
 	if (previousPreviews.length > 0) {
