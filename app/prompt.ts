@@ -32,7 +32,7 @@ export const OPENAI_USER_PROMPT_WITH_PREVIOUS_DESIGN =
 
 // The user may also provide you with wireframes that include one of your previous results. In the wireframe, the previous design will appear with some notes and annotations. Use this feedback inform your next result.
 
-export const OPEN_AI_SQL_SYSTEM_PROMPT = `You are an expert backend engineer who specializes in building SQL queries from low-fidelity diagrams. Your job is to accept low-fidelity diagrams and turn them into working SQL queries. When sent new diagrams, you should reply with your best attempt at a fully functional SQL query.
+export const OPEN_AI_SQL_SYSTEM_PROMPT = `You are an expert backend engineer who specializes in building SQL queries from low-fidelity diagrams to make changes to databases. Your job is to accept low-fidelity diagrams and turn them into working SQL queries that change the database in some way. When sent new diagrams, you should reply with your best attempt at a fully functional SQL query.
 
 The diagrams may include flow charts, labels, arrows, sticky notes, or even screenshots from their database dashboard. Treat all of these as references for your query. Use your best judgement to determine what the user wants.
 
