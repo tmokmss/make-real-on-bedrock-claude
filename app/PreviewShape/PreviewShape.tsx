@@ -1,5 +1,9 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { ReactP5Wrapper } from '@p5-wrapper/react'
+'use client'
+
+const ReactP5Wrapper = dynamic(async () => (await import('@p5-wrapper/react')).ReactP5Wrapper, {
+	ssr: false,
+})
 import {
 	BaseBoxShapeUtil,
 	DefaultSpinner,
@@ -11,6 +15,7 @@ import {
 	useToasts,
 	useValue,
 } from '@tldraw/tldraw'
+import dynamic from 'next/dynamic'
 
 export type PreviewShape = TLBaseShape<
 	'preview',
@@ -205,8 +210,10 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 		const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
 		// while screenshot is the same as the old one, keep waiting for a new one
 		return new Promise((resolve, _) => {
-			if (window === undefined) return resolve(g)
+			if (typeof window === 'undefined') return resolve(g)
+
 			const windowListener = (event: MessageEvent) => {
+				if (typeof window === 'undefined') return
 				if (event.data.screenshot && event.data?.shapeid === shape.id) {
 					const image = document.createElementNS('http://www.w3.org/2000/svg', 'image')
 					image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', event.data.screenshot)
@@ -218,11 +225,15 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 					resolve(g)
 				}
 			}
+
 			const timeOut = setTimeout(() => {
+				if (typeof window === 'undefined') return
 				resolve(g)
 				window.removeEventListener('message', windowListener)
 			}, 2000)
+
 			window.addEventListener('message', windowListener)
+
 			//request new screenshot
 			const firstLevelIframe = document.getElementById(`iframe-1-${shape.id}`) as HTMLIFrameElement
 			if (firstLevelIframe) {
