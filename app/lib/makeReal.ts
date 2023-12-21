@@ -109,5 +109,9 @@ function getJsonFromResponseText(responseText: string) {
 	const jsonStart = responseText.indexOf('{')
 	const jsonEnd = responseText.lastIndexOf('}')
 	const json = responseText.substring(jsonStart, jsonEnd + 1)
-	return JSON.parse(json)
+	try {
+		return JSON.parse(json)
+	} catch (e) {
+		throw Error(`Could not parse returned JSON: ${responseText}`)
+	}
 }

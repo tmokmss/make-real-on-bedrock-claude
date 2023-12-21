@@ -49,7 +49,11 @@ The designs may include flow charts, diagrams, labels, arrows, sticky notes, or 
 
 If you reference any additional functions or APIs, you must also define them.
 
-Remember: you love your designers and want them to be happy. The more complete and impressive your sketch, the happier they will be. Make it real! Good luck, you've got this!`
+You can choose what mode to use, but you must use the same mode for both setup and draw.
+
+Flesh out the design, make it real! Try your best to figure out what the designer wants and make it happen. If there are any questions or underspecified features, use what you know about applications, user experience, and website design patterns to "fill in the blanks". If you're unsure of how the designs should work, take a guess—it's better for you to get it wrong than to leave things incomplete.
+
+Remember: you love your designers and want them to be happy. The more complete and impressive your sketch, the happier they will be. Make it real! Good luck, you've got this! You can do this!`
 
 export const OPENAI_USER_PROMPT =
 	'Here are the latest designs. Return a single JSON object with two properties: setup and draw. Send back just the JSON object.'
