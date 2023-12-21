@@ -1,11 +1,9 @@
 import { Editor, createShapeId, getSvgAsImage } from '@tldraw/tldraw'
 import { track } from '@vercel/analytics/react'
 import { PreviewShape } from '../PreviewShape/PreviewShape'
-import { addGridToSvg } from './addGridToSvg'
 import { blobToBase64 } from './blobToBase64'
 import { getHtmlFromOpenAI } from './getHtmlFromOpenAI'
 import { getSelectionAsText } from './getSelectionAsText'
-import { uploadLink } from './uploadLink'
 
 export async function makeReal(editor: Editor, apiKey: string) {
 	// Get the selected shapes (we need at least one)
@@ -20,7 +18,7 @@ export async function makeReal(editor: Editor, apiKey: string) {
 		type: 'preview',
 		x: maxX + 60, // to the right of the selection
 		y: midY - (540 * 2) / 3 / 2, // half the height of the preview's initial shape
-		props: { html: '', source: '' },
+		props: { json: '', source: '' },
 	})
 
 	// Get an SVG based on the selected shapes
@@ -31,7 +29,7 @@ export async function makeReal(editor: Editor, apiKey: string) {
 
 	// Add the grid lines to the SVG
 	const grid = { color: 'red', size: 100, labels: true }
-	addGridToSvg(svg, grid)
+	// addGridToSvg(svg, grid)
 
 	if (!svg) throw Error(`Could not get the SVG.`)
 
@@ -75,25 +73,23 @@ export async function makeReal(editor: Editor, apiKey: string) {
 
 		// Extract the HTML from the response
 		const message = json.choices[0].message.content
-		const start = message.indexOf('<!DOCTYPE html>')
-		const end = message.indexOf('</html>')
-		const html = message.slice(start, end + '</html>'.length)
+		const _json = getJsonFromResponseText(message)
 
 		// No HTML? Something went wrong
-		if (html.length < 100) {
-			console.warn(message)
-			throw Error('Could not generate a design from those wireframes.')
-		}
+		// if (html.length < 100) {
+		// 	console.warn(message)
+		// 	throw Error('Could not generate a design from those wireframes.')
+		// }
 
 		// Upload the HTML / link for the shape
-		await uploadLink(newShapeId, html)
+		// await uploadLink(newShapeId, html)
 
 		// Update the shape with the new props
 		editor.updateShape<PreviewShape>({
 			id: newShapeId,
 			type: 'preview',
 			props: {
-				html,
+				json: _json,
 				source: dataUrl as string,
 				linkUploadVersion: 1,
 				uploadedShapeId: newShapeId,
@@ -106,4 +102,12 @@ export async function makeReal(editor: Editor, apiKey: string) {
 		editor.deleteShape(newShapeId)
 		throw e
 	}
+}
+
+function getJsonFromResponseText(responseText: string) {
+	if (responseText === '') return {}
+	const jsonStart = responseText.indexOf('{')
+	const jsonEnd = responseText.lastIndexOf('}')
+	const json = responseText.substring(jsonStart, jsonEnd + 1)
+	return JSON.parse(json)
 }

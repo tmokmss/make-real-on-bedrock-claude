@@ -124,3 +124,13 @@ body {
 	height: 38px;
 	padding: 8px;
 }
+
+.p5Canvas {
+	width: 100%;
+	height: 100%;
+}
+
+.react-p5-wrapper {
+	width: 100% !important;
+	height: 100% !important;
+}

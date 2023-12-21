@@ -64,39 +64,39 @@ export async function getHtmlFromOpenAI({
 	}
 
 	if (grid) {
-		userContent.push({
-			type: 'text',
-			text: `The designs have a ${grid.color} grid overlaid on top. Each cell of the grid is ${grid.size}x${grid.size}px.`,
-		})
+		// userContent.push({
+		// 	type: 'text',
+		// 	text: `The designs have a ${grid.color} grid overlaid on top. Each cell of the grid is ${grid.size}x${grid.size}px.`,
+		// })
 	}
 
 	// Add the previous previews as HTML
-	for (let i = 0; i < previousPreviews.length; i++) {
-		const preview = previousPreviews[i]
-		userContent.push(
-			{
-				type: 'text',
-				text: `The designs also included one of your previous result. Here's the image that you used as its source:`,
-			},
-			{
-				type: 'image_url',
-				image_url: {
-					url: preview.props.source,
-					detail: 'high',
-				},
-			},
-			{
-				type: 'text',
-				text: `And here's the HTML you came up with for it: ${preview.props.html}`,
-			}
-		)
-	}
+	// for (let i = 0; i < previousPreviews.length; i++) {
+	// 	const preview = previousPreviews[i]
+	// 	userContent.push(
+	// 		{
+	// 			type: 'text',
+	// 			text: `The designs also included one of your previous result. Here's the image that you used as its source:`,
+	// 		},
+	// 		{
+	// 			type: 'image_url',
+	// 			image_url: {
+	// 				url: preview.props.source,
+	// 				detail: 'high',
+	// 			},
+	// 		},
+	// 		{
+	// 			type: 'text',
+	// 			text: `And here's the HTML you came up with for it: ${preview.props.html}`,
+	// 		}
+	// 	)
+	// }
 
 	// Prompt the theme
-	userContent.push({
-		type: 'text',
-		text: `Please make your result use the ${theme} theme.`,
-	})
+	// userContent.push({
+	// 	type: 'text',
+	// 	text: `Please make your result use the ${theme} theme.`,
+	// })
 
 	const body: GPT4VCompletionRequest = {
 		model: 'gpt-4-vision-preview',
@@ -123,6 +123,7 @@ export async function getHtmlFromOpenAI({
 		throw Error(`Could not contact OpenAI: ${e.message}`)
 	}
 
+	console.log(json)
 	return json
 }
 

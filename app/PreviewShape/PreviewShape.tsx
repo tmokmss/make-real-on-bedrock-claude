@@ -1,26 +1,21 @@
 /* eslint-disable react-hooks/rules-of-hooks */
+import { ReactP5Wrapper } from '@p5-wrapper/react'
 import {
 	BaseBoxShapeUtil,
 	DefaultSpinner,
 	HTMLContainer,
-	Icon,
 	SvgExportContext,
 	TLBaseShape,
 	Vec2d,
-	toDomPrecision,
 	useIsEditing,
 	useToasts,
 	useValue,
 } from '@tldraw/tldraw'
-import { useEffect } from 'react'
-import { Dropdown } from '../components/Dropdown'
-import { LINK_HOST, PROTOCOL } from '../lib/hosts'
-import { uploadLink } from '../lib/uploadLink'
 
 export type PreviewShape = TLBaseShape<
 	'preview',
 	{
-		html: string
+		json: string
 		source: string
 		w: number
 		h: number
@@ -35,7 +30,7 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 
 	getDefaultProps(): PreviewShape['props'] {
 		return {
-			html: '',
+			json: '',
 			source: '',
 			w: (960 * 2) / 3,
 			h: (540 * 2) / 3,
@@ -62,34 +57,61 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 			[this.editor]
 		)
 
-		const { html, linkUploadVersion, uploadedShapeId } = shape.props
+		const { json, linkUploadVersion, uploadedShapeId } = shape.props
 
 		// upload the html if we haven't already:
-		useEffect(() => {
-			let isCancelled = false
-			if (html && (linkUploadVersion === undefined || uploadedShapeId !== shape.id)) {
-				;(async () => {
-					await uploadLink(shape.id, html)
-					if (isCancelled) return
+		// useEffect(() => {
+		// 	let isCancelled = false
+		// 	if (html && (linkUploadVersion === undefined || uploadedShapeId !== shape.id)) {
+		// 		;(async () => {
+		// 			await uploadLink(shape.id, html)
+		// 			if (isCancelled) return
 
-					this.editor.updateShape<PreviewShape>({
-						id: shape.id,
-						type: 'preview',
-						props: {
-							linkUploadVersion: 1,
-							uploadedShapeId: shape.id,
-						},
-					})
-				})()
+		// 			this.editor.updateShape<PreviewShape>({
+		// 				id: shape.id,
+		// 				type: 'preview',
+		// 				props: {
+		// 					linkUploadVersion: 1,
+		// 					uploadedShapeId: shape.id,
+		// 				},
+		// 			})
+		// 		})()
+		// 	}
+		// 	return () => {
+		// 		isCancelled = true
+		// 	}
+		// }, [shape.id, html, linkUploadVersion, uploadedShapeId])
+
+		const isLoading = json === ''
+
+		// const uploadUrl = [PROTOCOL, LINK_HOST, '/', shape.id.replace(/^shape:/, '')].join('')
+
+		const drawFunc = json['draw']?.replaceAll('function', '\nfunction')
+		const setupFunc = json['setup']?.replaceAll('function', '\nfunction')
+
+		// const setup = new Function('p5', json.setup)
+		const setup = new Function(
+			`p5`,
+			'width',
+			'height',
+			`windowWidth = width; windowHeight = height; ${setupFunc}; setup()`
+		)
+		const draw = new Function(
+			`p5`,
+			'width',
+			'height',
+			`windowWidth = width; windowHeight = height; ${drawFunc}; draw()`
+		)
+		const sketch = (p5) => {
+			p5.setup = () => {
+				makeP5Global(p5)
+				setup(p5, shape.props.w, shape.props.h)
 			}
-			return () => {
-				isCancelled = true
+			p5.draw = () => {
+				makeP5Global(p5)
+				draw(p5, shape.props.w, shape.props.h)
 			}
-		}, [shape.id, html, linkUploadVersion, uploadedShapeId])
-
-		const isLoading = linkUploadVersion === undefined || uploadedShapeId !== shape.id
-
-		const uploadUrl = [PROTOCOL, LINK_HOST, '/', shape.id.replace(/^shape:/, '')].join('')
+		}
 
 		return (
 			<HTMLContainer className="tl-embed-container" id={shape.id}>
@@ -110,69 +132,70 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 						<DefaultSpinner />
 					</div>
 				) : (
-					<>
-						<iframe
-							id={`iframe-1-${shape.id}`}
-							src={`${uploadUrl}?preview=1&v=${linkUploadVersion}`}
-							width={toDomPrecision(shape.props.w)}
-							height={toDomPrecision(shape.props.h)}
-							draggable={false}
-							style={{
-								pointerEvents: isEditing ? 'auto' : 'none',
-								boxShadow,
-								border: '1px solid var(--color-panel-contrast)',
-								borderRadius: 'var(--radius-2)',
-							}}
-						/>
-						<div
-							style={{
-								all: 'unset',
-								position: 'absolute',
-								top: -3,
-								right: -45,
-								height: 40,
-								width: 40,
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								cursor: 'pointer',
-								pointerEvents: 'all',
-							}}
-						>
-							<Dropdown boxShadow={boxShadow} html={shape.props.html} uploadUrl={uploadUrl}>
-								<button className="bg-white rounded p-2" style={{ boxShadow }}>
-									<Icon icon="dots-vertical" />
-								</button>
-							</Dropdown>
-						</div>
-						<div
-							style={{
-								textAlign: 'center',
-								position: 'absolute',
-								bottom: isEditing ? -40 : 0,
-								padding: 4,
-								fontFamily: 'inherit',
-								fontSize: 12,
-								left: 0,
-								width: '100%',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								pointerEvents: 'none',
-							}}
-						>
-							<span
-								style={{
-									background: 'var(--color-panel)',
-									padding: '4px 12px',
-									borderRadius: 99,
-									border: '1px solid var(--color-muted-1)',
-								}}
-							>
-								{isEditing ? 'Click the canvas to exit' : 'Double click to interact'}
-							</span>
-						</div>
-					</>
+					<ReactP5Wrapper sketch={sketch} />
+					// <>
+					// 	<iframe
+					// 		id={`iframe-1-${shape.id}`}
+					// 		src={`${uploadUrl}?preview=1&v=${linkUploadVersion}`}
+					// 		width={toDomPrecision(shape.props.w)}
+					// 		height={toDomPrecision(shape.props.h)}
+					// 		draggable={false}
+					// 		style={{
+					// 			pointerEvents: isEditing ? 'auto' : 'none',
+					// 			boxShadow,
+					// 			border: '1px solid var(--color-panel-contrast)',
+					// 			borderRadius: 'var(--radius-2)',
+					// 		}}
+					// 	/>
+					// 	<div
+					// 		style={{
+					// 			all: 'unset',
+					// 			position: 'absolute',
+					// 			top: -3,
+					// 			right: -45,
+					// 			height: 40,
+					// 			width: 40,
+					// 			display: 'flex',
+					// 			alignItems: 'center',
+					// 			justifyContent: 'center',
+					// 			cursor: 'pointer',
+					// 			pointerEvents: 'all',
+					// 		}}
+					// 	>
+					// 		<Dropdown boxShadow={boxShadow} html={shape.props.html} uploadUrl={uploadUrl}>
+					// 			<button className="bg-white rounded p-2" style={{ boxShadow }}>
+					// 				<Icon icon="dots-vertical" />
+					// 			</button>
+					// 		</Dropdown>
+					// 	</div>
+					// 	<div
+					// 		style={{
+					// 			textAlign: 'center',
+					// 			position: 'absolute',
+					// 			bottom: isEditing ? -40 : 0,
+					// 			padding: 4,
+					// 			fontFamily: 'inherit',
+					// 			fontSize: 12,
+					// 			left: 0,
+					// 			width: '100%',
+					// 			display: 'flex',
+					// 			alignItems: 'center',
+					// 			justifyContent: 'center',
+					// 			pointerEvents: 'none',
+					// 		}}
+					// 	>
+					// 		<span
+					// 			style={{
+					// 				background: 'var(--color-panel)',
+					// 				padding: '4px 12px',
+					// 				borderRadius: 99,
+					// 				border: '1px solid var(--color-muted-1)',
+					// 			}}
+					// 		>
+					// 			{isEditing ? 'Click the canvas to exit' : 'Double click to interact'}
+					// 		</span>
+					// 	</div>
+					// </>
 				)}
 			</HTMLContainer>
 		)
@@ -216,6 +239,18 @@ export class PreviewShapeUtil extends BaseBoxShapeUtil<PreviewShape> {
 	indicator(shape: PreviewShape) {
 		return <rect width={shape.props.w} height={shape.props.h} />
 	}
+}
+
+function makeP5Global(p5) {
+	Object.assign(window, p5)
+	const prototype = Object.getPrototypeOf(p5)
+	Object.getOwnPropertyNames(prototype).forEach((name) => {
+		if (name !== 'constructor') {
+			const bound =
+				typeof prototype[name] === 'function' ? prototype[name].bind(p5) : prototype[name]
+			window[name] = bound
+		}
+	})
 }
 
 // todo: export these from tldraw
