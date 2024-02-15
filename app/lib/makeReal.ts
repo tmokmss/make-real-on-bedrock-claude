@@ -1,11 +1,7 @@
-import { Editor, createShapeId, getSvgAsImage } from '@tldraw/tldraw'
-import { track } from '@vercel/analytics/react'
-import { PreviewShape } from '../PreviewShape/PreviewShape'
-import { addGridToSvg } from './addGridToSvg'
+import { Editor, TLTextShape, createShapeId, getSvgAsImage } from '@tldraw/tldraw'
 import { blobToBase64 } from './blobToBase64'
 import { getHtmlFromOpenAI } from './getHtmlFromOpenAI'
 import { getSelectionAsText } from './getSelectionAsText'
-import { uploadLink } from './uploadLink'
 
 export async function makeReal(editor: Editor, apiKey: string) {
 	// Get the selected shapes (we need at least one)
@@ -16,12 +12,18 @@ export async function makeReal(editor: Editor, apiKey: string) {
 	// Create the preview shape
 	const { maxX, midY } = editor.getSelectionPageBounds()
 	const newShapeId = createShapeId()
-	editor.createShape<PreviewShape>({
+	editor.createShape<TLTextShape>({
 		id: newShapeId,
-		type: 'preview',
+		type: 'text',
 		x: maxX + 60, // to the right of the selection
-		y: midY - (540 * 2) / 3 / 2, // half the height of the preview's initial shape
-		props: { html: '', source: '' },
+		y: midY,
+		props: {
+			text: 'Loading...',
+			w: (960 * 2) / 3,
+			color: 'black',
+			font: 'mono',
+			align: 'start',
+		},
 	})
 
 	// Get an SVG based on the selected shapes
@@ -29,10 +31,6 @@ export async function makeReal(editor: Editor, apiKey: string) {
 		scale: 1,
 		background: true,
 	})
-
-	// Add the grid lines to the SVG
-	const grid = { color: 'red', size: 100, labels: true }
-	addGridToSvg(svg, grid)
 
 	if (!svg) throw Error(`Could not get the SVG.`)
 
@@ -46,24 +44,12 @@ export async function makeReal(editor: Editor, apiKey: string) {
 	const dataUrl = await blobToBase64(blob!)
 	// downloadDataURLAsFile(dataUrl, 'tldraw.png')
 
-	// Get any previous previews among the selected shapes
-	const previousPreviews = selectedShapes.filter((shape) => {
-		return shape.type === 'preview'
-	}) as PreviewShape[]
-
-	if (previousPreviews.length > 0) {
-		track('repeat_make_real', { timestamp: Date.now() })
-	}
-
 	// Send everything to OpenAI and get some HTML back
 	try {
 		const json = await getHtmlFromOpenAI({
 			image: dataUrl,
 			apiKey,
 			text: getSelectionAsText(editor),
-			previousPreviews,
-			grid,
-			theme: editor.user.getUserPreferences().isDarkMode ? 'dark' : 'light',
 		})
 
 		if (!json) {
@@ -74,30 +60,16 @@ export async function makeReal(editor: Editor, apiKey: string) {
 			throw Error(`${json.error.message?.slice(0, 128)}...`)
 		}
 
-		// Extract the HTML from the response
 		const message = json.choices[0].message.content
-		const start = message.indexOf('<!DOCTYPE html>')
-		const end = message.indexOf('</html>')
-		const html = message.slice(start, end + '</html>'.length)
-
-		// No HTML? Something went wrong
-		if (html.length < 100) {
-			console.warn(message)
-			throw Error('Could not generate a design from those wireframes.')
-		}
-
-		// Upload the HTML / link for the shape
-		await uploadLink(newShapeId, html)
 
 		// Update the shape with the new props
-		editor.updateShape<PreviewShape>({
+		const shape = editor.getShape<TLTextShape>(newShapeId)
+		editor.updateShape<TLTextShape>({
 			id: newShapeId,
-			type: 'preview',
+			type: 'text',
 			props: {
-				html,
-				source: dataUrl as string,
-				linkUploadVersion: 1,
-				uploadedShapeId: newShapeId,
+				...shape.props,
+				text: message,
 			},
 		})
 
