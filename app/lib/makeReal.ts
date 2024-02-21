@@ -19,10 +19,11 @@ export async function makeReal(editor: Editor, apiKey: string) {
 		y: midY,
 		props: {
 			text: 'Loading...',
-			w: (960 * 2) / 3,
+			w: 500,
 			color: 'black',
 			font: 'mono',
 			align: 'start',
+			autoSize: true,
 		},
 	})
 
@@ -70,6 +71,16 @@ export async function makeReal(editor: Editor, apiKey: string) {
 			props: {
 				...shape.props,
 				text: message,
+			},
+		})
+
+		editor.updateShape<TLTextShape>({
+			id: newShapeId,
+			type: 'text',
+			props: {
+				...shape.props,
+				text: message,
+				// w: 1000,
 			},
 		})
 
