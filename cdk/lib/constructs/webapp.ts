@@ -27,6 +27,8 @@ export interface WebAppProps {
 	table: ITable
 	hostedZone: IHostedZone
 	certificate: ICertificate
+	basicAuthUsername: string
+	basicAuthPassword: string
 }
 
 export class WebApp extends Construct {
@@ -82,9 +84,14 @@ export class WebApp extends Construct {
 
 		const basicAuthFunction = new Function(this, 'BasicAuthFunction', {
 			functionName: `basic-authentication`,
-			code: FunctionCode.fromFile({
-				filePath: join(__dirname, 'cff', 'basic-auth.js'),
-			}),
+			code: FunctionCode.fromInline(
+				readFileSync(join(__dirname, 'cff', 'basic-auth.js'))
+					.toString()
+					.replace(
+						'<BASIC>',
+						Buffer.from(`${props.basicAuthUsername}:${props.basicAuthPassword}`).toString('base64')
+					)
+			),
 		})
 
 		const distribution = new Distribution(this, 'Distribution', {
@@ -154,7 +161,7 @@ export class WebApp extends Construct {
 			recordName: 'link',
 		})
 
-		new CfnOutput(this, 'HttpApiUrl', { value: api.url! })
-		new CfnOutput(this, 'CloudFrontUrl', { value: `https://${distribution.domainName}` })
+		// new CfnOutput(this, 'HttpApiUrl', { value: api.url! })
+		new CfnOutput(this, 'CloudFrontUrl', { value: `https://www.${hostedZone.zoneName}` })
 	}
 }

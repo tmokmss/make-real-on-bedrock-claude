@@ -3,7 +3,8 @@ function handler(event) {
   var headers = request.headers;
 
   // echo -n user:pass | base64
-  var authString = "Basic YWRtaW46QXNkZmFzZGYxIw==";
+  // replaced from CDK
+  var authString = "Basic <BASIC>";
 
   if (
     typeof headers.authorization === "undefined" ||

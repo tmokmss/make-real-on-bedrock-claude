@@ -7,9 +7,10 @@ import { WebApp } from './constructs/webapp'
 
 interface CdkStackProps extends cdk.StackProps {
 	certificate: ICertificate
-
 	zoneName: string
 	hostedZoneId: string
+	basicAuthUsername: string
+	basicAuthPassword: string
 }
 
 export class CdkStack extends cdk.Stack {
@@ -30,6 +31,12 @@ export class CdkStack extends cdk.Stack {
 			hostedZoneId: props.hostedZoneId,
 		})
 
-		new WebApp(this, 'WebApp', { table, hostedZone, certificate: props.certificate })
+		new WebApp(this, 'WebApp', {
+			table,
+			hostedZone,
+			certificate: props.certificate,
+			basicAuthUsername: props.basicAuthUsername,
+			basicAuthPassword: props.basicAuthPassword,
+		})
 	}
 }

@@ -13,6 +13,9 @@ const hostedZoneId = 'Z0XXXXXXXXXXXXXXXXXXX'
 // Also provide the zone name (domain) of the hosted zone here (e.g. example.com)
 const zoneName = 'example.com'
 
+const basicAuthUsername = 'admin'
+const basicAuthPassword = 'passw0rd'
+
 const certStack = new CertStack(app, 'MakeRealCertStack', {
 	env: {
 		region: 'us-east-1',
@@ -31,4 +34,6 @@ new CdkStack(app, 'MakeRealStack', {
 	certificate: certStack.certificate,
 	zoneName,
 	hostedZoneId,
+	basicAuthUsername,
+	basicAuthPassword,
 })
