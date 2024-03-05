@@ -1,7 +1,13 @@
 import { notFound } from 'next/navigation'
 import { LinkComponent } from '../../components/LinkComponent'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb'
 
 export const dynamic = 'force-dynamic'
+
+const ddb = new DynamoDBClient({})
+const client = DynamoDBDocumentClient.from(ddb)
+const TableName = process.env.TABLE_NAME ?? 'test-table'
 
 export default async function LinkPage({
 	params,
@@ -13,12 +19,15 @@ export default async function LinkPage({
 	const { linkId } = params
 	const isPreview = !!searchParams.preview
 
-	const result: any = await fetch('/api/db', {
-		method: 'POST',
-		body: JSON.stringify({
-			linkId,
-		}),
-	})
+	const resp = await client.send(
+		new GetCommand({
+			Key: {
+				PK: linkId,
+			},
+			TableName,
+		})
+	)
+	const result = resp.Item;
 
 	if (result?.html == null) notFound()
 

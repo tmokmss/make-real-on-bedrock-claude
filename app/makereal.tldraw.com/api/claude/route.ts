@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
 			body: JSON.stringify({
 				anthropic_version: 'bedrock-2023-05-31',
 				max_tokens: 4096,
-				temperature: 0,
+				temperature: 0.5,
 				system: data.systemPrompt,
 				messages: data.messages,
 			}),
