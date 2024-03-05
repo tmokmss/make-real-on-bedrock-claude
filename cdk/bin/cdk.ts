@@ -6,8 +6,12 @@ import { CertStack } from '../lib/cert-stack'
 
 const app = new cdk.App()
 
-const zoneName = 'TODO' 
-const hostedZoneId = 'TODO'
+// This app requires a Route53 hosted zone, created outside of this project beforehand.
+// After creating one, provide the hosted zone id here
+const hostedZoneId = 'Z0XXXXXXXXXXXXXXXXXXX'
+
+// Also provide the zone name (domain) of the hosted zone here (e.g. example.com)
+const zoneName = 'example.com'
 
 const certStack = new CertStack(app, 'MakeRealCertStack', {
 	env: {
