@@ -1,7 +1,5 @@
 'use server'
 
-import { sql } from '@vercel/postgres'
-
 export async function uploadLink(shapeId: string, html: string) {
 	if (typeof shapeId !== 'string' || !shapeId.startsWith('shape:')) {
 		throw new Error('shapeId must be a string starting with shape:')
@@ -11,5 +9,11 @@ export async function uploadLink(shapeId: string, html: string) {
 	}
 
 	shapeId = shapeId.replace(/^shape:/, '')
-	await sql`INSERT INTO links (shape_id, html) VALUES (${shapeId}, ${html})`
+	await fetch('/api/db', {
+		method: 'POST',
+		body: JSON.stringify({
+			shapeId,
+			html,
+		}),
+	})
 }

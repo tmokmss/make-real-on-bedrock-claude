@@ -1,5 +1,4 @@
 import { useBreakpoint, useEditor, useValue } from '@tldraw/tldraw'
-import { track } from '@vercel/analytics/react'
 
 export function LinkArea() {
 	const breakpoint = useBreakpoint()
@@ -16,7 +15,6 @@ export function LinkArea() {
 		>
 			<a
 				href="https://twitter.com/tldraw"
-				onClick={() => track('lockup_clicked', { timestamp: Date.now() })}
 			>
 				<img alt="tldraw logo" className="lockup" src="/lockup.svg" />
 			</a>

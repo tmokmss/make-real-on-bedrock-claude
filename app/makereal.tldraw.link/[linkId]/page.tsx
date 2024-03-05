@@ -1,4 +1,3 @@
-import { sql } from '@vercel/postgres'
 import { notFound } from 'next/navigation'
 import { LinkComponent } from '../../components/LinkComponent'
 
@@ -14,10 +13,16 @@ export default async function LinkPage({
 	const { linkId } = params
 	const isPreview = !!searchParams.preview
 
-	const result = await sql`SELECT html FROM links WHERE shape_id = ${linkId}`
-	if (result.rows.length !== 1) notFound()
+	const result: any = await fetch('/api/db', {
+		method: 'POST',
+		body: JSON.stringify({
+			linkId,
+		}),
+	})
 
-	let html: string = result.rows[0].html
+	if (result?.html == null) notFound()
+
+	let html: string = result.html
 
 	const SCRIPT_TO_INJECT_FOR_PREVIEW = `
     // send the screenshot to the parent window

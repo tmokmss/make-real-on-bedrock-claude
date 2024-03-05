@@ -5,7 +5,6 @@
 import '@tldraw/tldraw/tldraw.css'
 import dynamic from 'next/dynamic'
 import { PreviewShapeUtil } from '../PreviewShape/PreviewShape'
-import { APIKeyInput } from '../components/APIKeyInput'
 import { ExportButton } from '../components/ExportButton'
 
 import { LinkArea } from '../components/LinkArea'
@@ -24,7 +23,6 @@ export default function Home() {
 				shapeUtils={shapeUtils}
 				components={{ SharePanel: () => <ExportButton /> }}
 			>
-				<APIKeyInput />
 				<LinkArea />
 			</Tldraw>
 		</div>
