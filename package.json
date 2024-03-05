@@ -15,7 +15,7 @@
 		"@aws-sdk/lib-dynamodb": "^3.525.0",
 		"@radix-ui/react-dropdown-menu": "^2.0.6",
 		"@stackblitz/sdk": "^1.9.0",
-		"@tldraw/tldraw": "^2.0.0-canary.2211ca0063d6",
+		"tldraw": "^2.0.0",
 		"canvas-size": "^1.2.6",
 		"lz-string": "^1.5.0",
 		"nanoid": "^5.0.3",

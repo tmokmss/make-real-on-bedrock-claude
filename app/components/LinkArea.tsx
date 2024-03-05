@@ -1,4 +1,4 @@
-import { useBreakpoint, useEditor, useValue } from '@tldraw/tldraw'
+import { useBreakpoint, useEditor, useValue } from 'tldraw'
 
 export function LinkArea() {
 	const breakpoint = useBreakpoint()
