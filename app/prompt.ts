@@ -11,6 +11,7 @@ Instructions:
 - Use Unsplash to pull in any images you require.
 - Use Unpkg to pull in any JavaScript or CSS libraries you require.
 - Respond with a single HTML file that includes all necessary CSS and JavaScript.
+- Start the code from <!DOCTYPE html>, and end with </html>
 - Don't say "I am not able to ~". Try it even though you don't have confidence. You can do it.
 
 Tips:
