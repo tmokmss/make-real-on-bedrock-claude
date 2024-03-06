@@ -2,6 +2,8 @@
 
 This is a project to generate web frontend code from a freehand diagram using Amazon Bedrock with the foundation model Anthropic Claude v3.
 
+![architecture](./architecture.png)
+
 ## Deploy
 You can use [AWS CDK](https://aws.amazon.com/cdk/) to deploy this project.
 
