@@ -1,19 +1,10 @@
 'use server'
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
 import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb'
-// import { NextRequest } from 'next/server'
 
 const ddb = new DynamoDBClient({})
 const client = DynamoDBDocumentClient.from(ddb)
 const TableName = process.env.TABLE_NAME ?? 'test-table'
-
-// type RequestData = {
-// 	shapeId: string
-// 	html: string
-// }
-
-// export async function POST(req: NextRequest) {
-// 	const data = (await req.json()) as RequestData
 
 export async function uploadLink(shapeId: string, html: string) {
 	if (typeof shapeId !== 'string' || !shapeId.startsWith('shape:')) {
@@ -34,12 +25,3 @@ export async function uploadLink(shapeId: string, html: string) {
 			TableName,
 		})
 	)
-// }
-// 	await fetch('/api/db', {
-// 		method: 'POST',
-// 		body: JSON.stringify({
-// 			shapeId,
-// 			html,
-// 		}),
-// 	})
-}
