@@ -1,6 +1,10 @@
 'use server'
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb'
+import { DynamoDBDocumentClient, PutCommand } from '@aws-sdk/lib-dynamodb'
 
-import { sql } from '@vercel/postgres'
+const ddb = new DynamoDBClient({})
+const client = DynamoDBDocumentClient.from(ddb)
+const TableName = process.env.TABLE_NAME ?? 'test-table'
 
 export async function uploadLink(shapeId: string, html: string) {
 	if (typeof shapeId !== 'string' || !shapeId.startsWith('shape:')) {
@@ -11,5 +15,13 @@ export async function uploadLink(shapeId: string, html: string) {
 	}
 
 	shapeId = shapeId.replace(/^shape:/, '')
-	await sql`INSERT INTO links (shape_id, html) VALUES (${shapeId}, ${html})`
-}
+
+	const resp = await client.send(
+		new PutCommand({
+			Item: {
+				PK: shapeId,
+				html: html,
+			},
+			TableName,
+		})
+	)

@@ -16,7 +16,7 @@ export const config = {
 export function middleware(req: NextRequest) {
 	const url = req.nextUrl
 
-	const host = req.headers.get('host').toLowerCase()
+	const host = req.headers.get('x-forwarded-host')?.toLowerCase() ?? req.headers.get('host')?.toLowerCase()
 
 	const rewrittenUrl = new URL(url.toString())
 

@@ -1,10 +1,32 @@
-> If you want to make your own version of Make Real, check out our [starter repo](https://github.com/tldraw/make-real-starter).
+## make real on Amazon Bedrock (Anthropic Claude v3)
 
-## make real
+This is a project to generate web frontend code from a freehand diagram using Amazon Bedrock with the foundation model Anthropic Claude v3.
 
-Try it out at [makereal.tldraw.com](https://makereal.tldraw.com/)
+![architecture](./architecture.png)
 
-https://github.com/tldraw/draw-a-ui/assets/23072548/aa181d77-6ce6-41de-990d-e5905153579e
+## Deploy
+You can use [AWS CDK](https://aws.amazon.com/cdk/) to deploy this project.
 
-- To learn more about this project [read our blog post](https://tldraw.substack.com/p/make-real-the-story-so-far)
-- To read our guide to using the app [visit our discord](https://discord.gg/t7h8ECmqDW)
+First you have to configure CDK parameters in [`cdk/bin/cdk.ts`](cdk/bin/cdk.ts). Set `hostedZoneId` and `zoneName` with your Route 53 hosted zone.
+
+Then run the following command:
+
+```sh
+cd cdk
+npm ci
+npx cdk deploy --all
+```
+
+The deployment completes in 10 minutes. After a successful deployment, you can access the URL shown in the stack output:
+
+```
+Outputs:
+MakeRealStack.WebAppCloudFrontUrlBAD6B277 = https://www.example.com
+```
+
+## License
+Check the license of [tldraw](https://github.com/tldraw/tldraw). You have to use this app for non-commercial purpose.
+
+## Links
+* [the original project](https://github.com/tldraw/make-real)
+

@@ -10,8 +10,14 @@ Your prototype should look and feel much more complete and advanced than the wir
 
 Remember: you love your designers and want them to be happy. The more complete and impressive your prototype, the happier they will be. Good luck, you've got this!`
 
-export const OPENAI_USER_PROMPT =
-	'Here are the latest wireframes. Return a single HMTL file based on these wireframes and notes. Send back just the HTML file contents.'
+export const OPENAI_USER_PROMPT =`Here are the latest wireframes. Return a single HMTL file based on these wireframes and notes. Send back just the HTML file contents. To achieve the objective, think step by step.
 
-export const OPENAI_USER_PROMPT_WITH_PREVIOUS_DESIGN =
-	'Here are the latest wireframes. There are also some previous outputs here. Could you make a new website based on these wireframes and notes and send back just the html file?'
+Step 1: Describe the given image as much concretely as possible. What components do exist? Where are they? How about size or color? Also describe the relative position of each component.
+
+Step 2: Using the description from step 1, write a single HTML file using Tailwind CSS to realize the design. You have to start the code with <!DOCTYPE html> and end with </html>.`
+
+export const OPENAI_USER_PROMPT_WITH_PREVIOUS_DESIGN = `Here are the latest wireframes. There are also some previous outputs here. Could you make a new website based on these wireframes and notes and send back just the html file? To achieve the objective, think step by step.
+
+Step 1: Describe the given image as much concretely as possible. What components do exist? Where are they? How about size or color? Also describe the relative position of each component.
+
+Step 2: Using the description from step 1, write a single HTML file using Tailwind CSS to realize the design. You have to start the code with <!DOCTYPE html> and end with </html>.`
